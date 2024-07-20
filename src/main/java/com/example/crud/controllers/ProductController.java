@@ -4,9 +4,12 @@ import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestProduct;
 import com.example.crud.domain.product.Product;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.Optional;
@@ -42,6 +45,18 @@ public class ProductController {
         product.setPriceInCents(data.getPriceInCents());
         repository.save(product);
         return ResponseEntity.ok(product);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteProduct(@PathVariable String id) {
+        Optional<Product> existingProduct = repository.findById(id);
+        if (!existingProduct.isPresent()) {
+            System.out.println("Product not exists");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not exists");
+        }
+
+        repository.deleteById(id);
+        return ResponseEntity.ok("Product Deleted");
     }
 
 
